@@ -1,112 +1,34 @@
 import React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import type { ConditionValue } from '../lib/api/queries'
+import { usePresents } from '../lib/api/queries'
 
 export const Route = createFileRoute('/')({ component: GiftTable })
 
 type Condition = 'disponivel' | 'limitado' | 'esgotado' | 'online'
 
-interface GiftRow {
-  present: string
-  lugar: string
-  condicao: Condition
-  condicaoLabel: string
-  note?: string
+const CONDITION_MAP: Record<ConditionValue, Condition> = {
+  available: 'disponivel',
+  limited:   'limitado',
+  sold_out:  'esgotado',
+  online:    'online',
 }
 
-interface GiftGroup {
-  heading: string
-  rows: GiftRow[]
+const BADGE_BASE = 'inline-flex items-center gap-[0.35em] text-[0.75rem] font-semibold px-[0.7em] py-[0.22em] rounded-[2px] tracking-[0.04em]'
+
+const COND_CLASSES: Record<Condition, string> = {
+  disponivel: `${BADGE_BASE} bg-[rgba(128,0,32,0.1)] text-[var(--burgundy)] border border-[rgba(128,0,32,0.22)]`,
+  limitado:   `${BADGE_BASE} bg-[rgba(160,50,0,0.09)] text-[#8a3200] border border-[rgba(160,80,0,0.22)]`,
+  esgotado:   `${BADGE_BASE} bg-[#f0efef] text-[var(--ink-faint)] border border-[var(--gray-border)]`,
+  online:     `${BADGE_BASE} bg-[rgba(0,80,128,0.07)] text-[#005080] border border-[rgba(0,80,128,0.18)]`,
 }
 
-const GROUPS: GiftGroup[] = [
-  {
-    heading: 'Eletônicos & Tecnologia',
-    rows: [
-      {
-        present: 'AirPods Pro (2ª geração)',
-        lugar: 'Apple Store / Amazon',
-        condicao: 'disponivel',
-        condicaoLabel: 'Disponível',
-        note: 'R$ 1.899 — frete grátis',
-      },
-      {
-        present: 'Kindle Paperwhite',
-        lugar: 'Amazon / Magazine Luiza',
-        condicao: 'disponivel',
-        condicaoLabel: 'Disponível',
-        note: 'R$ 499 — à vista',
-      },
-      {
-        present: 'Carregador MagSafe 15W',
-        lugar: 'Apple Store / iPlace',
-        condicao: 'limitado',
-        condicaoLabel: 'Últimas unidades',
-        note: 'R$ 349',
-      },
-    ],
-  },
-  {
-    heading: 'Moda & Acessórios',
-    rows: [
-      {
-        present: 'Tênis New Balance 990v6',
-        lugar: 'New Balance / Dafiti',
-        condicao: 'disponivel',
-        condicaoLabel: 'Disponível',
-        note: 'R$ 1.199 — tam. 42',
-      },
-      {
-        present: 'Carteira em couro mínima',
-        lugar: 'Etsy / Elo7',
-        condicao: 'online',
-        condicaoLabel: 'Somente online',
-        note: 'R$ 180 — feita à mão',
-      },
-      {
-        present: 'Boné vintage lavado',
-        lugar: 'Urban Outfitters / Farfetch',
-        condicao: 'limitado',
-        condicaoLabel: 'Estoque limitado',
-        note: 'R$ 220',
-      },
-    ],
-  },
-  {
-    heading: 'Casa & Experiências',
-    rows: [
-      {
-        present: 'Jantar no Loup',
-        lugar: 'Rua Delfina, Pinheiros',
-        condicao: 'disponivel',
-        condicaoLabel: 'Reservas abertas',
-        note: 'Para dois — reservar com antecedência',
-      },
-      {
-        present: 'Kit Aeropress + café especial',
-        lugar: 'Suplicy / Clandestino Coffee',
-        condicao: 'disponivel',
-        condicaoLabel: 'Disponível',
-        note: 'R$ 380 — combo curado',
-      },
-      {
-        present: 'Livro "Sapiens" (edição ilustrada)',
-        lugar: 'Livraria Cultura / Amazon',
-        condicao: 'esgotado',
-        condicaoLabel: 'Esgotado',
-        note: 'Verificar reposição em abril',
-      },
-      {
-        present: 'Vela aromática Maison Margiela',
-        lugar: 'Sephora / Farfetch',
-        condicao: 'disponivel',
-        condicaoLabel: 'Disponível',
-        note: 'R$ 590 — REPLICA Jazz Club',
-      },
-    ],
-  },
-]
-
-const TOTAL = GROUPS.reduce((n, g) => n + g.rows.length, 0)
+const COND_DOT_BG: Record<Condition, string> = {
+  disponivel: 'bg-[rgba(128,0,32,0.1)]',
+  limitado:   'bg-[rgba(160,50,0,0.09)]',
+  esgotado:   'bg-[#f0efef]',
+  online:     'bg-[rgba(0,80,128,0.07)]',
+}
 
 /* ─── Rhinestone Heart SVG ─── */
 function RhinestoneHeart({ size = 32, uid }: { size?: number; uid: string }) {
@@ -323,7 +245,7 @@ const STICKERS: StickerDef[] = [
 
 function Stickers() {
   return (
-    <div className="stickers-layer" aria-hidden="true">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
       {STICKERS.map((s, i) => {
         const style = {
           top: s.top,
@@ -336,7 +258,7 @@ function Stickers() {
             : `star-shimmer ${s.duration} ${s.delay} ease-in-out infinite`,
         } as React.CSSProperties & Record<string, unknown>
         return (
-          <span key={i} className="sticker" style={style}>
+          <span key={i} className="absolute block drop-shadow-[0_2px_6px_rgba(180,0,40,0.18)]" style={style}>
             {s.type === 'heart'
               ? <RhinestoneHeart size={s.size} uid={String(i)} />
               : <SequinStar     size={s.size} uid={String(i)} />
@@ -349,61 +271,86 @@ function Stickers() {
 }
 
 function GiftTable() {
+  const { data: groups = [], isLoading, isError } = usePresents()
+
+  const total = groups.reduce((n, g) => n + g.presents.length, 0)
+
+  const thCls = `px-[1.4rem] py-4 text-left font-display text-base font-semibold italic tracking-[0.04em] text-[rgba(255,255,255,0.97)] border-r border-[rgba(255,255,255,0.12)] relative last:border-r-0 after:content-[''] after:absolute after:bottom-0 after:left-[1.4rem] after:right-[1.4rem] after:h-px after:bg-[rgba(255,255,255,0.15)] max-[700px]:px-[0.9rem] max-[700px]:py-[0.7rem] max-[700px]:text-[0.88rem]`
+  const tdCls = 'px-[1.4rem] py-[0.85rem] align-top text-[var(--ink-soft)] border-r border-[rgba(200,196,200,0.5)] leading-[1.5] last:border-r-0 max-[700px]:px-[0.9rem] max-[700px]:py-[0.7rem]'
+
   return (
     <>
     <Stickers />
-    <main className="page-wrap">
+    <main className="relative z-[1] w-[min(1100px,calc(100%-2rem))] mx-auto pt-14 pb-20 max-[700px]:pt-10 max-[700px]:pb-12">
       {/* ── Header ── */}
-      <header className="page-header fade-up">
-        <span className="page-eyebrow">Lista de Presentes</span>
-        <h1 className="page-title">
-          O que <em>ganhar de presente</em> das lojas no dia do seu aniversário?
+      <header className="text-center mb-12 fade-up">
+        <span className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-[var(--burgundy)] border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-[2px] mb-[1.1rem]">Lista de Presentes</span>
+        <h1 className="font-display text-[clamp(2.6rem,6vw,4.2rem)] font-bold text-[var(--ink)] leading-[1.06] mb-[0.6rem] tracking-[-0.01em]">
+          O que <em className="italic text-[var(--burgundy)]">ganhar de presente</em> das lojas no dia do seu aniversário?
         </h1>
-        <p className="page-subtitle">lugares, condições e sugestões reunidas num só lugar</p>
-        <div className="header-rule" />
+        <p className="text-[0.95rem] text-[var(--ink-faint)] font-light tracking-[0.03em]">lugares, condições e sugestões reunidas num só lugar</p>
+        <div className="w-10 h-0.5 bg-[var(--burgundy)] mt-[1.4rem] mx-auto opacity-60" />
       </header>
 
       {/* ── Table card ── */}
-      <div className="table-card fade-up" style={{ animationDelay: '120ms' }}>
-        <table className="gift-table">
-          <thead>
-            <tr>
-              <th style={{ width: '30%' }}>Lugares</th>
-              <th style={{ width: '35%' }}>Presentes</th>
-              <th style={{ width: '35%' }}>Condições</th>
-            </tr>
-          </thead>
+      <div className="bg-[var(--surface)] border border-[var(--gray-border)] rounded-[4px] overflow-hidden shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_28px_56px_rgba(128,0,32,0.07),0_8px_22px_rgba(0,0,0,0.05)] fade-up" style={{ animationDelay: '120ms' }}>
+        {isError ? (
+          <p className="p-6 text-center text-[0.75rem] text-[var(--ink-faint)] font-light">
+            Erro ao carregar os presentes.
+          </p>
+        ) : isLoading ? (
+          <p className="p-6 text-center text-[0.75rem] text-[var(--ink-faint)] font-light">
+            Carregando…
+          </p>
+        ) : groups.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 py-12 px-6 text-[var(--ink-faint)] text-sm font-light">
+            <RhinestoneHeart size={48} uid="empty" />
+            <p>Nenhum presente cadastrado ainda.</p>
+          </div>
+        ) : (
+          <table className="w-full border-collapse text-[0.88rem] max-[700px]:text-[0.82rem]">
+            <thead>
+              <tr className="bg-[var(--burgundy)]">
+                <th className={thCls} style={{ width: '30%' }}>Lugares</th>
+                <th className={thCls} style={{ width: '35%' }}>Presentes</th>
+                <th className={thCls} style={{ width: '35%' }}>Condições</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {GROUPS.map((group) => (
-              <React.Fragment key={group.heading}>
-                <tr className="group-row">
-                  <td colSpan={3}>{group.heading}</td>
-                </tr>
-                {group.rows.map((row) => (
-                  <tr key={row.present} className="data-row">
-                    <td className="cell-lugar">{row.lugar}</td>
-                    <td className="cell-present">{row.present}</td>
-                    <td>
-                      <span className={`cond-badge ${row.condicao}`}>
-                        {row.condicaoLabel}
-                      </span>
-                      {row.note && <p className="cond-note">{row.note}</p>}
-                    </td>
+            <tbody>
+              {groups.map((group) => (
+                <React.Fragment key={group.category}>
+                  <tr>
+                    <td colSpan={3} className="py-[0.55rem] px-[1.4rem] bg-[var(--burgundy-deep)] text-[rgba(255,255,255,0.88)] text-[0.65rem] font-semibold tracking-[0.22em] uppercase [border-top:2px_solid_var(--burgundy-bright)]">{group.category}</td>
                   </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                  {group.presents.map((row) => {
+                    const condicao = CONDITION_MAP[row.condition.value]
+                    return (
+                      <tr key={row.id} className="bg-[var(--gray-table)] border-b border-[var(--gray-border)] transition-[background] duration-[120ms] even:bg-[var(--gray-row-alt)] hover:bg-[var(--row-hover)] last:border-b-0">
+                        <td className={`${tdCls} font-medium`}>{row.place}</td>
+                        <td className={`${tdCls} font-display text-base font-semibold text-[var(--ink)] tracking-[0.01em]`}>{row.name}</td>
+                        <td className={tdCls}>
+                          <span className={COND_CLASSES[condicao]}>
+                            {row.condition.label}
+                          </span>
+                          {row.note && <p className="mt-[0.3em] text-[0.75rem] text-[var(--ink-faint)] font-light">{row.note}</p>}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* ── Footer legend ── */}
       <footer
-        className="table-footer fade-up"
+        className="mt-[1.6rem] flex items-center justify-between gap-4 flex-wrap fade-up"
         style={{ animationDelay: '220ms' }}
       >
-        <div className="table-legend">
+        <div className="flex gap-[1.2rem] flex-wrap">
           {(
             [
               ['disponivel', 'Disponível'],
@@ -412,17 +359,14 @@ function GiftTable() {
               ['esgotado',   'Esgotado'],
             ] as const
           ).map(([cls, label]) => (
-            <span key={cls} className="legend-item">
-              <span
-                className={`legend-dot cond-badge ${cls}`}
-                style={{ padding: 0, border: 'none', width: 10, height: 10 }}
-              />
+            <span key={cls} className="flex items-center gap-[0.45em] text-[0.72rem] text-[var(--ink-faint)]">
+              <span className={`w-[10px] h-[10px] rounded-[1px] shrink-0 ${COND_DOT_BG[cls]}`} />
               {label}
             </span>
           ))}
         </div>
-        <span className="table-count">
-          {TOTAL} sugestões · {GROUPS.length} categorias
+        <span className="text-[0.72rem] text-[var(--ink-faint)] italic">
+          {total} sugestões · {groups.length} categorias
         </span>
       </footer>
     </main>
