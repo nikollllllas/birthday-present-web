@@ -28,14 +28,15 @@ export function CategoryModal({ category, onClose }: CategoryModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+        <h2 id="category-modal-title" className="text-lg font-semibold mb-4">
           {category ? 'Editar categoria' : 'Nova categoria'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Nome</label>
+            <label htmlFor="category-name" className="block text-sm font-medium mb-1">Nome</label>
             <input
+              id="category-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
