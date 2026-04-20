@@ -37,7 +37,7 @@ export const Route = createFileRoute('/admin')({
 
 function AdminPage() {
   const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem('admin_token'),
+    typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null,
   )
   const [modal, setModal] = useState<ModalState>({ type: 'none' })
   const { tab } = Route.useSearch()
@@ -64,7 +64,6 @@ function AdminPage() {
     <>
       <AdminPanel
         tab={tab}
-        modal={modal}
         setModal={setModal}
         onLogout={handleLogout}
         onTabChange={(t) => navigate({ search: { tab: t } })}
@@ -173,7 +172,6 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
 
 interface AdminPanelProps {
   tab: Tab
-  modal: ModalState
   setModal: (m: ModalState) => void
   onLogout: () => void
   onTabChange: (t: Tab) => void
