@@ -218,7 +218,7 @@ function AdminPanel({ tab, setModal, onLogout, onTabChange }: AdminPanelProps) {
 // ── Presents tab ───────────────────────────────────────────────────
 
 function PresentsTab({ setModal }: { setModal: (m: ModalState) => void }) {
-  const { data: groups = [], isLoading } = usePresents()
+  const { data: groups = [], isLoading, isError } = usePresents()
   const presents = groups.flatMap((g) =>
     g.presents.map((p) => ({ ...p, categoryName: g.category })),
   )
@@ -235,6 +235,10 @@ function PresentsTab({ setModal }: { setModal: (m: ModalState) => void }) {
       </div>
       {isLoading ? (
         <p className="text-sm text-zinc-500">Carregando…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600">Erro ao carregar presentes.</p>
+      ) : presents.length === 0 ? (
+        <p className="text-sm text-zinc-500">Nenhum presente cadastrado.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
@@ -288,7 +292,7 @@ function PresentsTab({ setModal }: { setModal: (m: ModalState) => void }) {
 // ── Categories tab ─────────────────────────────────────────────────
 
 function CategoriesTab({ setModal }: { setModal: (m: ModalState) => void }) {
-  const { data: categories = [], isLoading } = useCategories()
+  const { data: categories = [], isLoading, isError } = useCategories()
 
   return (
     <div>
@@ -302,6 +306,10 @@ function CategoriesTab({ setModal }: { setModal: (m: ModalState) => void }) {
       </div>
       {isLoading ? (
         <p className="text-sm text-zinc-500">Carregando…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600">Erro ao carregar categorias.</p>
+      ) : categories.length === 0 ? (
+        <p className="text-sm text-zinc-500">Nenhuma categoria cadastrada.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
