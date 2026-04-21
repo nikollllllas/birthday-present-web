@@ -10,7 +10,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Footer from '../components/Footer'
-import Header from '../components/Header'
 
 import appCss from '../styles.css?url'
 
@@ -97,7 +96,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(128,0,32,0.15)]">
         <QueryClientProvider client={queryClient}>
-          <Header />
           {children}
           <Footer />
           <TanStackDevtools
