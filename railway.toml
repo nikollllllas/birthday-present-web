@@ -3,7 +3,7 @@ builder = "NIXPACKS"
 buildCommand = "pnpm install && pnpm build"
 
 [build.nixpacksPlan.variables]
-NIXPACKS_NODE_VERSION = "22"
+NIXPACKS_NODE_VERSION = "22.22.2"
 
 [deploy]
 startCommand = "node server.production.mjs"
