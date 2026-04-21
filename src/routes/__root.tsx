@@ -1,5 +1,10 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
-import { HeadContent, Scripts, createRootRoute, Link } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  Link,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { useState } from 'react'
@@ -39,19 +44,19 @@ export const Route = createRootRoute({
 
 function RouteError({ error }: ErrorComponentProps) {
   return (
-    <main className="relative z-[1] flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-[var(--burgundy)] border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-[2px] mb-6">
+    <main className="relative z-10 flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-(--burgundy) border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-xs mb-6">
         Erro
       </p>
-      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-[var(--ink)] leading-tight mb-3">
+      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-(--ink) leading-tight mb-3">
         Algo deu errado
       </h1>
-      <p className="text-[0.95rem] text-[var(--ink-faint)] font-light mb-2">
+      <p className="text-[0.95rem] text-(--ink-faint) font-light mb-2">
         {error.message}
       </p>
       <Link
         to="/"
-        className="text-[0.85rem] font-medium text-[var(--burgundy)] underline underline-offset-4 hover:opacity-70"
+        className="text-[0.85rem] font-medium text-(--burgundy) underline underline-offset-4 hover:opacity-70"
       >
         Voltar para a lista
       </Link>
@@ -61,19 +66,19 @@ function RouteError({ error }: ErrorComponentProps) {
 
 function NotFound() {
   return (
-    <main className="relative z-[1] flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-[var(--burgundy)] border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-[2px] mb-6">
+    <main className="relative z-10 flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-(--burgundy) border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-xs mb-6">
         404
       </p>
-      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-[var(--ink)] leading-tight mb-3">
+      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-[--ink] leading-tight mb-3">
         Página não encontrada
       </h1>
-      <p className="text-[0.95rem] text-[var(--ink-faint)] font-light mb-8">
+      <p className="text-[0.95rem] text-(--ink-faint) font-light mb-8">
         O endereço que você acessou não existe.
       </p>
       <Link
         to="/"
-        className="text-[0.85rem] font-medium text-[var(--burgundy)] underline underline-offset-4 hover:opacity-70"
+        className="text-[0.85rem] font-medium text-(--burgundy) underline underline-offset-4 hover:opacity-70"
       >
         Voltar para a lista
       </Link>
@@ -90,7 +95,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(128,0,32,0.15)]">
+      <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(128,0,32,0.15)]">
         <QueryClientProvider client={queryClient}>
           <Header />
           {children}
