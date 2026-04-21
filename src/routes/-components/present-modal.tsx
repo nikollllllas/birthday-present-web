@@ -53,42 +53,57 @@ export function PresentModal({ present, onClose }: PresentModalProps) {
     }
   }
 
+  const inputCls =
+    'w-full border border-[var(--gray-border)] rounded-lg px-3 py-2 text-sm bg-[var(--gray-table)] text-[var(--ink)] focus:outline-none focus:border-[var(--burgundy)]'
+  const labelCls = 'block text-[0.8rem] font-medium text-[var(--ink-soft)] mb-1'
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 max-w-md w-full mx-4 shadow-xl overflow-y-auto max-h-[90vh]" role="dialog" aria-modal="true" aria-labelledby="present-modal-title">
-        <h2 id="present-modal-title" className="text-lg font-semibold mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--burgundy-glow)] backdrop-blur-sm">
+      <div
+        className="bg-[var(--surface)] border border-[rgba(128,0,32,0.2)] rounded-xl p-6 max-w-md w-full mx-4 shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_28px_56px_rgba(128,0,32,0.07),0_8px_22px_rgba(0,0,0,0.05)] overflow-y-auto max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="present-modal-title"
+      >
+        <h2 id="present-modal-title" className="font-display italic text-[var(--ink)] text-xl mb-4">
           {present ? 'Editar presente' : 'Novo presente'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="present-name" className="block text-sm font-medium mb-1">Nome</label>
+            <label htmlFor="present-name" className={labelCls}>
+              Nome
+            </label>
             <input
               id="present-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-transparent"
+              className={inputCls}
             />
           </div>
           <div>
-            <label htmlFor="present-place" className="block text-sm font-medium mb-1">Lugar</label>
+            <label htmlFor="present-place" className={labelCls}>
+              Lugar
+            </label>
             <input
               id="present-place"
               type="text"
               value={place}
               onChange={(e) => setPlace(e.target.value)}
               required
-              className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-transparent"
+              className={inputCls}
             />
           </div>
           <div>
-            <label htmlFor="present-condition" className="block text-sm font-medium mb-1">Condição</label>
+            <label htmlFor="present-condition" className={labelCls}>
+              Condição
+            </label>
             <select
               id="present-condition"
               value={conditionValue}
               onChange={(e) => setConditionValue(e.target.value as ConditionValue)}
-              className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-zinc-900"
+              className={inputCls}
             >
               {CONDITION_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -98,13 +113,15 @@ export function PresentModal({ present, onClose }: PresentModalProps) {
             </select>
           </div>
           <div>
-            <label htmlFor="present-category" className="block text-sm font-medium mb-1">Categoria</label>
+            <label htmlFor="present-category" className={labelCls}>
+              Categoria
+            </label>
             <select
               id="present-category"
               value={categoryId}
               onChange={(e) => setCategoryId(Number(e.target.value))}
               required
-              className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-zinc-900"
+              className={inputCls}
             >
               <option value={0} disabled>
                 Selecione uma categoria
@@ -117,13 +134,15 @@ export function PresentModal({ present, onClose }: PresentModalProps) {
             </select>
           </div>
           <div>
-            <label htmlFor="present-note" className="block text-sm font-medium mb-1">Nota (opcional)</label>
+            <label htmlFor="present-note" className={labelCls}>
+              Nota (opcional)
+            </label>
             <input
               id="present-note"
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-transparent"
+              className={inputCls}
             />
           </div>
           <div className="flex gap-3 justify-end pt-2">
@@ -131,14 +150,14 @@ export function PresentModal({ present, onClose }: PresentModalProps) {
               type="button"
               onClick={onClose}
               disabled={isPending}
-              className="px-4 py-2 rounded-lg text-sm border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm border border-[var(--gray-border)] text-[var(--ink-soft)] hover:bg-[var(--blush)] disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending || categoryId === 0}
-              className="px-4 py-2 rounded-lg text-sm bg-[rgb(128,0,32)] text-white hover:bg-[rgb(100,0,24)] disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm bg-[var(--burgundy)] text-white hover:bg-[var(--burgundy-deep)] disabled:opacity-50"
             >
               {isPending ? 'Salvando…' : 'Salvar'}
             </button>
