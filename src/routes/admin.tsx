@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { api } from '../lib/api'
-import type { Category, Present } from '../lib/queries'
+import { api } from '../lib/api/client'
+import type { Category, Present } from '../lib/api/queries'
 import {
   useCategories,
   useDeleteCategory,
   useDeletePresent,
   usePresents,
-} from '../lib/queries'
+} from '../lib/api/queries'
 import { CategoryModal } from './-components/category-modal'
 import { DeleteModal } from './-components/delete-modal'
 import { PresentModal } from './-components/present-modal'
@@ -115,7 +115,10 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
     setError('')
     setLoading(true)
     try {
-      const { data } = await api.post<{ token: string }>('/login', { email, password })
+      const { data } = await api.post<{ token: string }>('/login', {
+        email,
+        password,
+      })
       localStorage.setItem('admin_token', data.token)
       onLogin(data.token)
     } catch {
@@ -131,7 +134,12 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
         <h1 className="text-2xl font-semibold mb-6 text-center">Admin</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="login-email" className="block text-sm font-medium mb-1">Email</label>
+            <label
+              htmlFor="login-email"
+              className="block text-sm font-medium mb-1"
+            >
+              Email
+            </label>
             <input
               id="login-email"
               type="email"
@@ -143,7 +151,12 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
             />
           </div>
           <div>
-            <label htmlFor="login-password" className="block text-sm font-medium mb-1">Senha</label>
+            <label
+              htmlFor="login-password"
+              className="block text-sm font-medium mb-1"
+            >
+              Senha
+            </label>
             <input
               id="login-password"
               type="password"
@@ -154,7 +167,11 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
               className="w-full border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm bg-transparent"
             />
           </div>
-          {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={loading}
@@ -183,6 +200,7 @@ function AdminPanel({ tab, setModal, onLogout, onTabChange }: AdminPanelProps) {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-semibold">Painel Admin</h1>
         <button
+          type="button"
           onClick={onLogout}
           className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
         >
@@ -194,6 +212,7 @@ function AdminPanel({ tab, setModal, onLogout, onTabChange }: AdminPanelProps) {
         {(['presents', 'categories'] as const).map((t) => (
           <button
             key={t}
+            type="button"
             onClick={() => onTabChange(t)}
             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
               tab === t
@@ -227,6 +246,7 @@ function PresentsTab({ setModal }: { setModal: (m: ModalState) => void }) {
     <div>
       <div className="flex justify-end mb-4">
         <button
+          type="button"
           onClick={() => setModal({ type: 'create-present' })}
           className="px-4 py-2 rounded-lg text-sm bg-[rgb(128,0,32)] text-white hover:bg-[rgb(100,0,24)]"
         >
@@ -260,19 +280,27 @@ function PresentsTab({ setModal }: { setModal: (m: ModalState) => void }) {
                 >
                   <td className="py-2 pr-3">{p.name}</td>
                   <td className="py-2 pr-3 text-zinc-500">{p.place}</td>
-                  <td className="py-2 pr-3 text-zinc-500">{p.condition.label}</td>
+                  <td className="py-2 pr-3 text-zinc-500">
+                    {p.condition.label}
+                  </td>
                   <td className="py-2 pr-3 text-zinc-500">{p.categoryName}</td>
                   <td className="py-2 pr-3 text-zinc-500">{p.note ?? '—'}</td>
                   <td className="py-2 text-right whitespace-nowrap">
                     <button
-                      onClick={() => setModal({ type: 'edit-present', present: p })}
+                      type="button"
+                      onClick={() =>
+                        setModal({ type: 'edit-present', present: p })
+                      }
                       className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mr-3"
                       aria-label={`Editar ${p.name}`}
                     >
                       ✏️
                     </button>
                     <button
-                      onClick={() => setModal({ type: 'delete-present', present: p })}
+                      type="button"
+                      onClick={() =>
+                        setModal({ type: 'delete-present', present: p })
+                      }
                       className="text-zinc-400 hover:text-red-600"
                       aria-label={`Excluir ${p.name}`}
                     >
@@ -298,6 +326,7 @@ function CategoriesTab({ setModal }: { setModal: (m: ModalState) => void }) {
     <div>
       <div className="flex justify-end mb-4">
         <button
+          type="button"
           onClick={() => setModal({ type: 'create-category' })}
           className="px-4 py-2 rounded-lg text-sm bg-[rgb(128,0,32)] text-white hover:bg-[rgb(100,0,24)]"
         >
@@ -328,14 +357,20 @@ function CategoriesTab({ setModal }: { setModal: (m: ModalState) => void }) {
                   <td className="py-2">{c.category}</td>
                   <td className="py-2 text-right whitespace-nowrap">
                     <button
-                      onClick={() => setModal({ type: 'edit-category', category: c })}
+                      type="button"
+                      onClick={() =>
+                        setModal({ type: 'edit-category', category: c })
+                      }
                       className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mr-3"
                       aria-label={`Editar ${c.category}`}
                     >
                       ✏️
                     </button>
                     <button
-                      onClick={() => setModal({ type: 'delete-category', category: c })}
+                      type="button"
+                      onClick={() =>
+                        setModal({ type: 'delete-category', category: c })
+                      }
                       className="text-zinc-400 hover:text-red-600"
                       aria-label={`Excluir ${c.category}`}
                     >
@@ -354,7 +389,13 @@ function CategoriesTab({ setModal }: { setModal: (m: ModalState) => void }) {
 
 // ── Delete wrappers (call hook here, not in DeleteModal) ───────────
 
-function DeletePresentModal({ present, onClose }: { present: Present; onClose: () => void }) {
+function DeletePresentModal({
+  present,
+  onClose,
+}: {
+  present: Present
+  onClose: () => void
+}) {
   const del = useDeletePresent()
   return (
     <DeleteModal
@@ -366,7 +407,13 @@ function DeletePresentModal({ present, onClose }: { present: Present; onClose: (
   )
 }
 
-function DeleteCategoryModal({ category, onClose }: { category: Category; onClose: () => void }) {
+function DeleteCategoryModal({
+  category,
+  onClose,
+}: {
+  category: Category
+  onClose: () => void
+}) {
   const del = useDeleteCategory()
   return (
     <DeleteModal

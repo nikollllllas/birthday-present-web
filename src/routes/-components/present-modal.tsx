@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { ConditionValue, Present } from '../../lib/queries'
-import { useCategories, useCreatePresent, useUpdatePresent } from '../../lib/queries'
+import type { ConditionValue, Present } from '../../lib/api/queries'
+import { useCategories, useCreatePresent, useUpdatePresent } from '../../lib/api/queries'
 
 const CONDITION_OPTIONS: { value: ConditionValue; label: string }[] = [
   { value: 'available', label: 'Disponível' },

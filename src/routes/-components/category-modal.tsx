@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { Category } from '../../lib/queries'
-import { useCreateCategory, useUpdateCategory } from '../../lib/queries'
+import type { Category } from '../../lib/api/queries'
+import { useCreateCategory, useUpdateCategory } from '../../lib/api/queries'
 
 interface CategoryModalProps {
   category?: Category
