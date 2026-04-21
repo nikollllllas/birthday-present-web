@@ -1,4 +1,5 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import type { ErrorComponentProps } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, Link } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { useState } from 'react'
@@ -32,13 +33,59 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
+  errorComponent: RouteError,
 })
+
+function RouteError({ error }: ErrorComponentProps) {
+  return (
+    <main className="relative z-[1] flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-[var(--burgundy)] border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-[2px] mb-6">
+        Erro
+      </p>
+      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-[var(--ink)] leading-tight mb-3">
+        Algo deu errado
+      </h1>
+      <p className="text-[0.95rem] text-[var(--ink-faint)] font-light mb-2">
+        {error.message}
+      </p>
+      <Link
+        to="/"
+        className="text-[0.85rem] font-medium text-[var(--burgundy)] underline underline-offset-4 hover:opacity-70"
+      >
+        Voltar para a lista
+      </Link>
+    </main>
+  )
+}
+
+function NotFound() {
+  return (
+    <main className="relative z-[1] flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <p className="inline-block tracking-[0.22em] uppercase text-[0.6rem] font-semibold text-[var(--burgundy)] border border-[rgba(128,0,32,0.3)] px-[1.1em] py-[0.3em] rounded-[2px] mb-6">
+        404
+      </p>
+      <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-bold text-[var(--ink)] leading-tight mb-3">
+        Página não encontrada
+      </h1>
+      <p className="text-[0.95rem] text-[var(--ink-faint)] font-light mb-8">
+        O endereço que você acessou não existe.
+      </p>
+      <Link
+        to="/"
+        className="text-[0.85rem] font-medium text-[var(--burgundy)] underline underline-offset-4 hover:opacity-70"
+      >
+        Voltar para a lista
+      </Link>
+    </main>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
@@ -50,7 +97,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <Footer />
           <TanStackDevtools
             config={{ position: 'bottom-right' }}
-            plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
           />
           <Scripts />
         </QueryClientProvider>
